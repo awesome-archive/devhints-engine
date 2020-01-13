@@ -1,25 +1,29 @@
-import { graphql, Link, useStaticQuery } from 'gatsby'
+import { Link } from 'gatsby'
 import React from 'react'
 
-import { Consumer } from '../contexts/SiteContext'
+import useSiteContent from '../../gatsby-hooks/useSiteContent'
 import BackButton from './BackButton'
 import PageActions from './PageActions'
 import SocialList from './SocialList'
-import CSS from './TopNav.module.scss'
+import CSS from './TopNav.module.css'
 
 /**
  * Props
  */
 
 interface Props {
-  // If true, shows the back button
+  /** If true, shows the back button */
   back?: boolean
 
-  // Title of the page. (Home page doesn't have one.)
-  // This is not the site title
+  /**
+   * Title of the page. (Home page doesn't have one.)
+   * This is not the site title.
+   */
   title?: string
 
-  // Path of the current page
+  /**
+   * Path of the current page
+   */
   path?: string
 }
 
@@ -29,15 +33,10 @@ interface Props {
 
 const TopNav = ({ back, title, path }: Props) => {
   const isSheetPage = !!title
-
-  const { content } = useStaticQuery(QUERY).site.siteMetadata
+  const content = useSiteContent()
 
   // Permalink for Social list
-  const permalink =
-    (typeof window !== 'undefined' &&
-      window.location &&
-      window.location.href) ||
-    null
+  const permalink = getPermalink()
 
   return (
     <nav className={CSS.root} data-js-no-preview role='navigation'>
@@ -59,18 +58,17 @@ const TopNav = ({ back, title, path }: Props) => {
   )
 }
 
-const QUERY = graphql`
-  {
-    site {
-      siteMetadata {
-        content {
-          topNav {
-            title
-          }
-        }
-      }
-    }
-  }
-`
+/**
+ * Get the permalink path for the current page.
+ */
+
+function getPermalink() {
+  return (
+    (typeof window !== 'undefined' &&
+      window.location &&
+      window.location.href) ||
+    null
+  )
+}
 
 export default TopNav

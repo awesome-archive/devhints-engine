@@ -1,10 +1,10 @@
 import React from 'react'
-import Helmet from 'react-helmet'
 
-import { LiveSearchInput } from '../../search'
-import { Consumer } from '../contexts/SiteContext'
-import { Context, GroupedSiteLinks, SiteLink } from '../types'
-import CommonHead from './CommonHead'
+import useSiteContent from '../../gatsby-hooks/useSiteContent'
+import CommonHead from '../../gatsby-shell/comps/CommonHead'
+import { HomeMeta } from '../../gatsby-shell/Meta'
+import { GroupedSiteLinks, SiteLink } from '../../types/types'
+import { LiveSearchInput } from '../../web-search'
 import PagesList from './PagesList'
 import SiteHeader from './SiteHeader'
 import TopNav from './TopNav'
@@ -14,29 +14,24 @@ export interface Props {
   groups: GroupedSiteLinks
 }
 
-export interface ViewProps extends Props {
-  metaTitle: string
-  metaDescription: string
-  recentlyUpdatedLabel: string
-}
-
 /**
- * Home page template (pure version).
+ * The home page.
+ *
+ * @example
+ *     <RootPage
+ *       groups={{ 'React': [ ... ] }}
+ *       recentlyUpdated={[ ... ]}
+ *     />
  */
 
-export const View = ({
-  recentlyUpdated,
-  groups,
-  metaTitle,
-  metaDescription,
-  recentlyUpdatedLabel
-}: ViewProps) => {
+export const RootPage = (props: Props) => {
+  const content = useSiteContent()
+  const recentlyUpdatedLabel = content.home.recentlyUpdated
+  const { groups, recentlyUpdated } = props
+
   return (
     <div>
-      <Helmet>
-        <title>{metaTitle}</title>
-        <meta name='description' content={metaDescription} />
-      </Helmet>
+      <HomeMeta />
       <CommonHead />
       <TopNav />
       <div className='body-area -slim'>
@@ -53,31 +48,5 @@ export const View = ({
     </div>
   )
 }
-
-/**
- * The home page.
- *
- * @example
- *     <RootPage
- *       groups={{ 'React': [ ... ] }}
- *       recentlyUpdated={[ ... ]}
- *     />
- */
-
-export const RootPage = (props: Props) => (
-  <Consumer>
-    {({ CONTENT }) => {
-      if (!CONTENT) return <span />
-      return (
-        <View
-          {...props}
-          metaTitle={CONTENT.home.title}
-          metaDescription={CONTENT.home.description}
-          recentlyUpdatedLabel={CONTENT.home.recentlyUpdated}
-        />
-      )
-    }}
-  </Consumer>
-)
 
 export default RootPage
